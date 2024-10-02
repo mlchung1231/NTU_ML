@@ -24,6 +24,10 @@ class myPLA:
         predicted_y = np.sign((self.weights.T @ x) + self.bias)
         
         return predicted_y
+    
+    def margin(self, train_X):
+        distances = np.abs(train_X @ self.weights + self.bias) / np.linalg.norm(self.weights)
+        return distances
 
 
 
@@ -42,8 +46,15 @@ train_Y = train_Y.astype(float)
 model = myPLA()
 model.fit(train_X, train_Y)
 
-prediction = model.predict([4.5, 3])
-print("Predictions:", prediction[0])
+#prediction = model.predict([4.5, 3])
+#print("Predictions:", prediction[0])
+
+
+margins_1 = min(model.margin(train_X[0:50]))
+print(f"margin of class 1： {margins_1[0]:.4f}")
+margins_neg1 = min(model.margin(train_X[50:100]))
+print(f"margin of class -1： {margins_neg1[0]:.4f}")
+
 
 
 plt.figure(figsize=(8, 6))
