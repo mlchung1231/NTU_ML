@@ -32,6 +32,8 @@ def L_D(x_domain, x1_doamin, x2_domain, dx):
     error_min_b = 10000
     for x1 in x1_domain:
         for x2 in x2_domain: 
+            if x1 >= x2:
+                continue
             total_error_a = 0
             total_error_b = 0
             for x in x_domain:
@@ -64,11 +66,7 @@ def L_D(x_domain, x1_doamin, x2_domain, dx):
         
 
 dx = 0.01
-"""
-x_domain = [-1 + i * dx for i in range(201)]
-x1_domain = [-0.99 + i * dx for i in range(199)]
-x2_domain = [-0.99 + i * dx for i in range(199)]
-"""
+
 x_domain = np.arange(-1.0,1.01, 0.01 )
 x1_domain = np.arange(-0.99,1.0, 0.01 )
 x2_domain = np.arange(-0.99,1.0, 0.01 )
