@@ -12,9 +12,10 @@ class myNaiveBayesClassifier:
         self.c_x_y = np.zeros((len(self.classes), X.shape[1]));
         self.P_x_y = np.zeros((2 * len(self.classes), X.shape[1]));
         for n in range(len(y)):
-            self.c_x_y[y[n]] += X[n]                
+            self.c_x_y[y[n]] += X[n]
+        self.c_x_y += 1 
         for c in range(len(self.classes)):
-            self.P_x_y[2*c + 1] = self.c_x_y[c] / self.y_counts[c]
+            self.P_x_y[2*c + 1] = self.c_x_y[c] / (self.y_counts[c] + 1)
             self.P_x_y[2*c] = 1 - self.P_x_y[2*c + 1]
             
         
