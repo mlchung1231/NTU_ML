@@ -21,17 +21,21 @@ class myNaiveBayesClassifier:
         
     def predict(self, X):
         predictions = []
+        probability = []
         for n in range(X.shape[0]):
             P_y_x = []
             for c in range(len(self.classes)):
                 temp_1 = X[n] * self.P_x_y[2 * c + 1]
-                temp_0 = (1 - X[n]) * self.P_x_y[2 * c]
-                temp = temp_0 + temp_1
-                P_xs_y = np.prod(temp)
+                temp_0 = (1 - X[n]) * self.P_x_y[2 * c] 
+                temp = np.log(temp_0 + temp_1)
+                P_xs_y_log = np.sum(temp)
+                P_xs_y = np.exp(P_xs_y_log)
                 P_y_x.append(P_xs_y * self.P_y[c])
             max_class = np.argmax(P_y_x)
+            P_x = np.sum(P_y_x)
             predictions.append(max_class)
-        return np.array(predictions)
+            probability.append(P_y_x[max_class] / P_x)
+        return np.array(predictions), np.array(probability)
     
     def plot_P_x_y(self):
         fig, axes = plt.subplots(2, 5, figsize=(12, 5))
@@ -59,7 +63,7 @@ nb_classifier = myNaiveBayesClassifier()
 nb_classifier.fit(x_train_binary, y_train)
 nb_classifier.plot_P_x_y()
 
-y_pred = nb_classifier.predict(x_test_binary)
+y_pred, y_prob = nb_classifier.predict(x_test_binary)
 accuracy = np.mean(y_pred == y_test)
 print(f"Accuracy: {accuracy:.4f}")
 
@@ -112,13 +116,13 @@ plt.show()
 
 fix_image_flat = fix_image.reshape(-1, 28 * 28) / 255.0
 fix_image_binary = (fix_image_flat > threshold).astype(np.float32)
-img_pred = nb_classifier.predict(fix_image_binary)
+img_pred, img_prob = nb_classifier.predict(fix_image_binary)
 
 fig, axes = plt.subplots(1, 3, figsize=(12, 5))
 axes = axes.ravel()
 for i in range(3):
     axes[i].imshow(fix_image[i], cmap='gray')
-    axes[i].set_title(f"Real:{images_label[i]}, Predict:{img_pred[i]}", fontsize = 12)
+    axes[i].set_title(f"Predict:{img_pred[i]}  Probability:{img_prob[i]:.4f}", fontsize = 12)
     axes[i].axis('off')
 plt.tight_layout()
 plt.show()
