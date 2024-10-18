@@ -62,6 +62,11 @@ class myNaiveBayesClassifier:
     def decide_class(self, Y):
         if isinstance(Y, int):
             return Y
+        elif Y == 'default':
+            Y_values = list(range(10))
+            random_number = np.random.choice(Y_values, size=1, p=self.P_y)
+            gen_Y = random_number.item()
+            return gen_Y
         else:
             Y_values = list(range(10))
             random_number = np.random.choice(Y_values, size=1, p=Y)
@@ -74,7 +79,7 @@ class myNaiveBayesClassifier:
         random_matrix = np.random.rand(28, 28)
         x_prob = self.P_x_y[2 * Y + 1].reshape(28, 28)
         img = x_prob * random_matrix 
-        out_img = self.improve_img(img, 0.18)
+        out_img = self.improve_img(img, 0.12)
         return out_img, Y
     
     def generate_img2(self, Y):
@@ -109,19 +114,36 @@ x_test_binary = (x_test_flat > threshold).astype(np.float32)
 
 nb_classifier = myNaiveBayesClassifier()
 nb_classifier.fit(x_train_binary, y_train)
+nb_classifier.plot_P_x_y()
 
-Y1 = 3
-Y2 = [0.05, 0.05, 0.05, 0.55, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
+y_pred, y_prob = nb_classifier.predict(x_test_binary)
+accuracy = np.mean(y_pred == y_test)
+print(f"Accuracy: {accuracy:.4f}")
 
 fig, axes = plt.subplots(2, 5, figsize=(12, 5))
 axes = axes.ravel()
 for i in range(10):
-    gen_img, gen_Y = nb_classifier.generate_img2(Y2)
+    axes[i].imshow(x_test[i], cmap='gray')
+    axes[i].set_title(f"Predict:{y_pred[i]}  Probability:{y_prob[i]:.2f}", fontsize = 12)
+    axes[i].axis('off')
+plt.tight_layout()
+plt.show()
+
+Y1 = 3
+Y2 = [0.05, 0.05, 0.05, 0.55, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
+Y3 = 'default'
+
+fig, axes = plt.subplots(2, 5, figsize=(12, 5))
+axes = axes.ravel()
+for i in range(10):
+    gen_img, gen_Y = nb_classifier.generate_img2(Y3)
     axes[i].imshow(gen_img, cmap='gray')
     axes[i].set_title(f"Label: {gen_Y}", fontsize = 12)
     axes[i].axis('off')
 plt.tight_layout()
 plt.show()
+
+
 
 
 
