@@ -5,9 +5,13 @@ import matplotlib.pyplot as plt
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
-def gradient_descent(X, y, eta=0.1, iterations=2000):
+def gradient_descent(X, y, eta=0.1, iterations=3000):
     N = X.shape[0]
     w = np.zeros(X.shape[1])
+    P_y = np.zeros((y.shape[0], 2))
+    P_y = np.array([(y+1)/2, 1-(y+1)/2]).T
+    
+    predictions = np.zeros((X.shape[0], 2))
 
     for i in range(iterations):
         gradient = (X * y[:, np.newaxis]) * (sigmoid(-y*(X @ w))[:, np.newaxis])
@@ -15,7 +19,8 @@ def gradient_descent(X, y, eta=0.1, iterations=2000):
         w += eta * gradient                 
         
         if i % 100 == 0:
-            loss = abs(y - (2 * sigmoid(X @ w) -1))
+            predictions = np.array([sigmoid(X @ w), 1-sigmoid(X @ w)]).T
+            loss = -P_y * np.log(predictions)
             loss = np.sum(loss)
             print(f"Iteration {i}, Loss: {loss}")
 
